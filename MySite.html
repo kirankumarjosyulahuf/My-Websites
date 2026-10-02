@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kiran — Personal Space</title>
+<style>
+    :root {
+        --bg: #07090d;
+        --panel: rgba(18, 22, 30, 0.72);
+        --panel-border: rgba(255,255,255,0.09);
+        --text: #f4f7fb;
+        --muted: #98a2b3;
+        --accent: #7c5cff;
+        --accent2: #00d4ff;
+        --danger: #ff5c7a;
+        --success: #42e8a1;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+            radial-gradient(circle at 15% 20%, rgba(124,92,255,.20), transparent 30%),
+            radial-gradient(circle at 85% 80%, rgba(0,212,255,.12), transparent 30%),
+            var(--bg);
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+        background-size: 45px 45px;
+        mask-image: linear-gradient(to bottom, black, transparent);
+    }
+
+    .hidden { display: none !important; }
+
+    /* Password screen */
+    #lockScreen {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+    }
+
+    .lock-card {
+        width: min(430px, 100%);
+        padding: 42px;
+        text-align: center;
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 28px;
+        backdrop-filter: blur(24px);
+        box-shadow: 0 30px 100px rgba(0,0,0,.45);
+    }
+
+    .lock-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 22px;
+        display: grid;
+        place-items: center;
+        border-radius: 20px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        font-size: 28px;
+        box-shadow: 0 10px 40px rgba(124,92,255,.3);
+    }
+
+    h1, h2, p { margin-top: 0; }
+
+    .lock-card h1 {
+        margin-bottom: 10px;
+        font-size: 28px;
+    }
+
+    .lock-card p {
+        color: var(--muted);
+        line-height: 1.6;
+    }
+
+    .password-wrap {
+        position: relative;
+        margin-top: 28px;
+    }
+
+    input {
+        width: 100%;
+        padding: 16px 18px;
+        border: 1px solid var(--panel-border);
+        border-radius: 14px;
+        outline: none;
+        color: var(--text);
+        background: rgba(255,255,255,.05);
+        font-size: 17px;
+        letter-spacing: 4px;
+        text-align: center;
+        transition: .2s;
+    }
+
+    input:focus {
+        border-color: rgba(124,92,255,.7);
+        box-shadow: 0 0 0 4px rgba(124,92,255,.12);
+    }
+
+    button {
+        width: 100%;
+        margin-top: 12px;
+        padding: 15px;
+        border: 0;
+        border-radius: 14px;
+        cursor: pointer;
+        color: white;
+        font-size: 16px;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--accent), #5d8cff);
+        transition: transform .2s, box-shadow .2s;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(124,92,255,.25);
+    }
+
+    #message {
+        min-height: 24px;
+        margin-top: 16px;
+        font-size: 14px;
+    }
+
+    .error { color: var(--danger); }
+    .success { color: var(--success); }
+
+    /* Main site */
+    #site {
+        max-width: 1120px;
+        margin: auto;
+        padding: 30px 24px 80px;
+    }
+
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 0 50px;
+    }
+
+    .brand {
+        font-weight: 800;
+        letter-spacing: -.5px;
+    }
+
+    .status {
+        color: var(--muted);
+        font-size: 13px;
+    }
+
+    .hero {
+        min-height: 65vh;
+        display: flex;
+        align-items: center;
+        padding: 60px 0;
+    }
+
+    .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 13px;
+        border: 1px solid var(--panel-border);
+        border-radius: 999px;
+        background: rgba(255,255,255,.035);
+        color: #c9d1df;
+        font-size: 13px;
+        margin-bottom: 24px;
+    }
+
+    .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 12px var(--success);
+    }
+
+    .hero h1 {
+        max-width: 850px;
+        font-size: clamp(48px, 8vw, 88px);
+        line-height: .98;
+        letter-spacing: -4px;
+        margin-bottom: 28px;
+    }
+
+    .gradient-text {
+        background: linear-gradient(100deg, #fff, #a78bfa 45%, #67e8f9);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .hero p {
+        max-width: 680px;
+        color: var(--muted);
+        font-size: 19px;
+        line-height: 1.7;
+    }
+
+    .section {
+        margin-top: 90px;
+    }
+
+    .section-label {
+        color: #8b96a8;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 12px;
+        margin-bottom: 16px;
+    }
+
+    .section h2 {
+        font-size: 34px;
+        letter-spacing: -1.5px;
+        margin-bottom: 30px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+
+    .card {
+        padding: 26px;
+        border: 1px solid var(--panel-border);
+        border-radius: 22px;
+        background: var(--panel);
+        backdrop-filter: blur(18px);
+        transition: transform .25s, border-color .25s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(124,92,255,.35);
+    }
+
+    .card-icon {
+        font-size: 25px;
+        margin-bottom: 20px;
+    }
+
+    .card h3 {
+        margin-bottom: 10px;
+        font-size: 19px;
+    }
+
+    .card p {
+        color: var(--muted);
+        line-height: 1.65;
+        font-size: 14px;
+    }
+
+    .timeline {
+        border-left: 1px solid rgba(255,255,255,.12);
+        padding-left: 26px;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 32px;
+    }
+
+    .timeline-item::before {
+        content: "";
+        position: absolute;
+        left: -32px;
+        top: 5px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 15px rgba(124,92,255,.7);
+    }
+
+    .timeline-item strong {
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    .timeline-item span {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .quote {
+        margin-top: 80px;
+        padding: 40px;
+        border-radius: 26px;
+        background: linear-gradient(135deg, rgba(124,92,255,.14), rgba(0,212,255,.06));
+        border: 1px solid var(--panel-border);
+        text-align: center;
+    }
+
+    .quote p {
+        font-size: 25px;
+        line-height: 1.45;
+        letter-spacing: -.5px;
+    }
+
+    footer {
+        margin-top: 80px;
+        padding-top: 24px;
+        border-top: 1px solid rgba(255,255,255,.08);
+        color: #687386;
+        font-size: 13px;
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    @media (max-width: 800px) {
+        .grid { grid-template-columns: 1fr; }
+        .hero h1 { letter-spacing: -2px; }
+        .lock-card { padding: 30px 24px; }
+        footer { flex-direction: column; }
+    }
+</style>
+</head>
+
+<body>
+
+<!-- PASSWORD GATE -->
+<section id="lockScreen">
+    <div class="lock-card">
+        <div class="lock-icon">⌁</div>
+        <h1>Private Space</h1>
+        <p>A small corner of the internet about Kiran. Enter the access code to continue.</p>
+
+        <div class="password-wrap">
+            <input id="password" type="password" maxlength="4" inputmode="numeric"
+                   placeholder="••••" autocomplete="off"
+                   onkeydown="if(event.key==='Enter') unlock()">
+            <button onclick="unlock()">Enter</button>
+        </div>
+
+        <div id="message"></div>
+    </div>
+</section>
+
+<!-- MAIN SITE -->
+<main id="site" class="hidden">
+    <nav>
+        <div class="brand">KIRAN<span style="color:#7c5cff">.</span></div>
+        <div class="status">Personal space · 2026</div>
+    </nav>
+
+    <section class="hero">
+        <div>
+            <div class="eyebrow"><span class="dot"></span> Building, learning & experimenting</div>
+
+            <h1>
+                Engineer by profession.<br>
+                <span class="gradient-text">Builder by nature.</span>
+            </h1>
+
+            <p>
+                I'm Kiran, a Controls Engineer working in automotive Model-Based Development.
+                I enjoy understanding how complex systems work, turning ideas into working
+                prototypes, and continuously building new skills along the way.
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">01 · What I do</div>
+        <h2>Engineering is my playground.</h2>
+
+        <div class="grid">
+            <article class="card">
+                <div class="card-icon">⚙️</div>
+                <h3>Controls & MBD</h3>
+                <p>
+                    Model-Based Development, MATLAB/Simulink, Stateflow, Embedded C,
+                    auto-code generation, MIL/SIL/PIL and automotive ECU software.
+                </p>
+            </article>
+
+            <article class="card">
+                <div class="card-icon">🏎️</div>
+                <h3>Automotive</h3>
+                <p>
+                    I'm particularly interested in vehicle systems, controls,
+                    vehicle dynamics and the engineering behind high-performance machines.
+                </p>
+            </article>
+
+            <article class="card">
+                <div class="card-icon">🤖</div>
+                <h3>AI & Automation</h3>
+                <p>
+                    I like finding repetitive engineering work and asking:
+                    "Can this be automated?" Python, AI agents and developer tooling
+                    are part of that exploration.
+                </p>
+            </article>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">02 · Beyond work</div>
+        <h2>Things I'm curious about.</h2>
+
+        <div class="grid">
+            <article class="card">
+                <div class="card-icon">📷</div>
+                <h3>Photography</h3>
+                <p>
+                    Learning photography, experimenting with cameras and trying to
+                    capture interesting moments rather than simply collecting them.
+                </p>
+            </article>
+
+            <article class="card">
+                <div class="card-icon">🏍️</div>
+                <h3>Machines</h3>
+                <p>
+                    Motorcycles, displays, electronics, diagnostics and the satisfaction
+                    of understanding what is happening underneath the surface.
+                </p>
+            </article>
+
+            <article class="card">
+                <div class="card-icon">📚</div>
+                <h3>Learning</h3>
+                <p>
+                    Deep work, engineering fundamentals, embedded systems, vehicle
+                    technology and whatever interesting problem comes next.
+                </p>
+            </article>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">03 · The journey</div>
+        <h2>Always building the next version.</h2>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <strong>Automotive Controls</strong>
+                <span>Working with model-based development and ECU software in the automotive domain.</span>
+            </div>
+
+            <div class="timeline-item">
+                <strong>Automation</strong>
+                <span>Turning repetitive engineering workflows into scripts, tools and automated pipelines.</span>
+            </div>
+
+            <div class="timeline-item">
+                <strong>AI Exploration</strong>
+                <span>Exploring practical local AI agents that can work alongside engineering workflows.</span>
+            </div>
+
+            <div class="timeline-item">
+                <strong>Personal Projects</strong>
+                <span>Building small things simply because they are interesting — from dashboards to photography projects.</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="quote">
+        <p>
+            "The goal isn't to become a different person.<br>
+            It's to keep building a better version of yourself."
+        </p>
+    </div>
+
+    <footer>
+        <span>© 2026 Kiran</span>
+        <span>Built with HTML · CSS · JavaScript</span>
+    </footer>
+</main>
+
+<script>
+    const CORRECT_PASSWORD = "0000";
+    const MAX_ATTEMPTS = 3;
+    let attempts = 0;
+
+    function unlock() {
+        const input = document.getElementById("password");
+        const message = document.getElementById("message");
+
+        if (attempts >= MAX_ATTEMPTS) {
+            return;
+        }
+
+        if (input.value === CORRECT_PASSWORD) {
+            message.textContent = "Access granted.";
+            message.className = "success";
+
+            setTimeout(() => {
+                document.getElementById("lockScreen").classList.add("hidden");
+                document.getElementById("site").classList.remove("hidden");
+            }, 300);
+
+            return;
+        }
+
+        attempts++;
+        input.value = "";
+
+        if (attempts >= MAX_ATTEMPTS) {
+            input.disabled = true;
+            document.querySelector(".lock-card button").disabled = true;
+            message.textContent = "Access locked. Too many incorrect attempts.";
+            message.className = "error";
+        } else {
+            const remaining = MAX_ATTEMPTS - attempts;
+            message.textContent = `Incorrect password. ${remaining} attempt${remaining === 1 ? "" : "s"} remaining.`;
+            message.className = "error";
+        }
+    }
+</script>
+
+</body>
+</html>
